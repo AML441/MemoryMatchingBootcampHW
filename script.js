@@ -22,7 +22,18 @@ let lockBoard = false;
 
 */
 function initGame() {
-    // Write your code here
+    const shuffledSymbols = shuffleArray([...symbols, ...symbols]);
+    
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.innerHTML = '';
+
+    shuffledSymbols.forEach(symbol => {
+        const cardElement = createCard(symbol);
+        gameBoard.appendChild(cardElement);
+    });
+
+    resetBoard();
+    
 
     document.getElementById('restart-btn').addEventListener('click', initGame);
 }
@@ -33,7 +44,12 @@ function initGame() {
     Also make sure to add the event listener with the 'flipCard' function
 */
 function createCard(symbol) {
-    // Write your code here
+    const cardElement = document.createElement('div');
+    cardElement.classList.add('card');
+    cardElement.textContent = '';  // Initially the card is blank
+    cardElement.dataset.symbol = symbol;  // Store the symbol as data on the card
+    cardElement.addEventListener('click', () => flipCard(cardElement));
+    return cardElement;
 }
 
 /*
@@ -47,7 +63,18 @@ function createCard(symbol) {
 function flipCard(card) {
     // If the board is supposed to be locked or you picked the same card you already picked
     if (lockBoard || card === firstCard) return;
-    // Write your code here
+
+    card.classList.add('flipped');
+    card.textContent = card.dataset.symbol; 
+    
+    if (!firstCard) {
+        firstCard = card;
+        return;
+    }
+
+    secondCard = card;
+    checkForMatch();
+
 }
 
 /* 
@@ -56,7 +83,11 @@ function flipCard(card) {
     Otherwise, you should unflip the card and continue playing normally.
 */
 function checkForMatch() {
-    // Write your code here
+    if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+        disableCards();  
+    } else {
+        unflipCards(); 
+    }
 }
 
 /* 
@@ -65,7 +96,9 @@ function checkForMatch() {
     to reset the firstCard, secondCard, and lockBoard variables. (That's been written for you already)
 */
 function disableCards() {
-    // Write your code here
+    firstCard.classList.add('matched');
+    secondCard.classList.add('matched');
+    resetBoard();
 }
  
 /* ---------------------  Everything under has already been done for you -------------------------- */
@@ -96,6 +129,7 @@ function shuffleArray(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
 }
 
 initGame();
